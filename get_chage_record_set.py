@@ -11,7 +11,9 @@ def main(tsv_path):
     for l in lines:
         name = l[0]
         type = l[1]
-        v = '"{}"'.format(l[3])
+        v = l[3]
+        if '=' in l[3]:
+            v = '"{}"'.format(v)
 
         k = '{}-{}'.format(name, type)
         if 'values' not in dic[k]:
@@ -28,11 +30,7 @@ def main(tsv_path):
                 "Name": v['name'],
                 "Type": v['type'],
                 "TTL": v['ttl'],
-                "ResourceRecords": [
-                    {
-                        "Value": v['values']
-                    }
-                ]
+                "ResourceRecords": [{"Value": e} for e in v['values']],
             }
         }
         changes.append(record)
