@@ -9,6 +9,8 @@ def main(tsv_path):
 
     changes = []
     for l in lines:
+        v = l[3]
+        v = '"{}"'.format(v)
         record = {
             "Action": "CREATE",
             "ResourceRecordSet": {
@@ -17,7 +19,7 @@ def main(tsv_path):
                 "TTL": int(l[2]),
                 "ResourceRecords": [
                     {
-                        "Value": l[3]
+                        "Value": v
                     }
                 ]
             }
