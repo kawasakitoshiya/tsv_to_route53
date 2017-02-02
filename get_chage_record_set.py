@@ -1,25 +1,36 @@
 import sys
 import json
 import datetime
+from collections import defaultdict
 
 
 def main(tsv_path):
     with open(tsv_path) as f:
         lines = map(lambda x: x.strip().split('\t'), f.readlines())
-
-    changes = []
+    dic = defaultdict(dict)
     for l in lines:
-        v = l[3]
-        v = '"{}"'.format(v)
+        name = l[0]
+        type = l[1]
+        v = '"{}"'.format(l[3])
+
+        k = '{}-{}'.format(name, type)
+        if 'values' not in dic[k]:
+            dic[k]['values'] = []
+        dic[k]['values'].append(v)
+        dic[k]['ttl'] = int(l[2])
+        dic[k]['name'] = name
+        dic[k]['type'] = type
+    changes = []
+    for k, v in dic.items():
         record = {
             "Action": "CREATE",
             "ResourceRecordSet": {
-                "Name": l[0],
-                "Type": l[1],
-                "TTL": int(l[2]),
+                "Name": v['name'],
+                "Type": v['type'],
+                "TTL": v['ttl'],
                 "ResourceRecords": [
                     {
-                        "Value": v
+                        "Value": v['values']
                     }
                 ]
             }
